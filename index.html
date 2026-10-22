@@ -4,27 +4,772 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI/CD Workshop</title>
+    <title>CI/CD Workshop | DevOps Unleashed</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #080b14;
+            --card: rgba(255, 255, 255, 0.045);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --cyan: #22d3ee;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse at 15% 10%, #4c1d9550, transparent 40%),
+                radial-gradient(ellipse at 85% 35%, #0891b230, transparent 35%),
+                radial-gradient(ellipse at 50% 100%, #7c3aed20, transparent 40%);
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.15;
+            background-image:
+                linear-gradient(#64748b20 1px, transparent 1px),
+                linear-gradient(90deg, #64748b20 1px, transparent 1px);
+            background-size: 45px 45px;
+            mask-image: linear-gradient(to bottom, black, transparent 90%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(1120px, 90%);
+            margin: auto;
+        }
+
+        /* NAVBAR */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 11, 20, 0.75);
+            backdrop-filter: blur(18px);
+        }
+
+        .nav-content {
+            min-height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--cyan);
+        }
+
+        .nav-button {
+            border: 1px solid #8b5cf680;
+            background: #8b5cf620;
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: white !important;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 660px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            align-items: center;
+            gap: 55px;
+            padding-top: 70px;
+            padding-bottom: 80px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 13px;
+            border: 1px solid #22d3ee40;
+            background: #22d3ee0c;
+            border-radius: 50px;
+            color: var(--cyan);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 26px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #34d399;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #34d399;
+            animation: pulse 1.5s infinite;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 6vw, 5.3rem);
+            line-height: 1.04;
+            letter-spacing: -4px;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(100deg, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            color: var(--muted);
+            max-width: 530px;
+            font-size: 1.05rem;
+            margin-bottom: 32px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.3s ease;
+        }
+
+        .btn-primary {
+            color: #080b14;
+            background: linear-gradient(100deg, #a78bfa, #22d3ee);
+            box-shadow: 0 0 30px #8b5cf625;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 35px #8b5cf630;
+        }
+
+        /* TERMINAL */
+        .terminal {
+            border: 1px solid #ffffff20;
+            border-radius: 18px;
+            background: rgba(13, 17, 30, 0.88);
+            box-shadow: 0 30px 100px #0008, 0 0 60px #8b5cf615;
+            overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .terminal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #ffffff05;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .red { background: #fb7185; }
+        .yellow { background: #fbbf24; }
+        .green { background: #34d399; }
+
+        .terminal-title {
+            margin: auto;
+            margin-left: 12px;
+            font: 0.72rem 'Space Mono', monospace;
+            color: var(--muted);
+        }
+
+        .terminal-body {
+            padding: 25px;
+            font: 0.8rem/2 'Space Mono', monospace;
+        }
+
+        .comment { color: #64748b; }
+        .command { color: #c4b5fd; }
+        .success { color: #34d399; }
+        .info { color: #22d3ee; }
+
+        .cursor {
+            display: inline-block;
+            width: 7px;
+            height: 15px;
+            background: var(--cyan);
+            vertical-align: middle;
+            animation: blink 1s steps(2) infinite;
+        }
+
+        /* METRICS */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: #ffffff04;
+            margin-bottom: 120px;
+        }
+
+        .metric {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .metric + .metric {
+            border-left: 1px solid var(--border);
+        }
+
+        .metric h2 {
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
+
+        .metric p {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* SECTION */
+        section {
+            scroll-margin-top: 100px;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 55px;
+        }
+
+        .section-heading .label {
+            font: 0.75rem 'Space Mono', monospace;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            letter-spacing: -2px;
+            margin: 15px 0;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+        }
+
+        /* FEATURE CARDS */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 130px;
+        }
+
+        .feature-card {
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--card);
+            position: relative;
+            overflow: hidden;
+            transition: 0.35s ease;
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: 0.35s;
+            background: radial-gradient(circle at top left, #8b5cf625, transparent 65%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: #8b5cf680;
+            box-shadow: 0 20px 50px #0004;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #a78bfa40;
+            background: #8b5cf620;
+            border-radius: 14px;
+            color: #c4b5fd;
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            position: relative;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* PIPELINE */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 130px;
+        }
+
+        .pipeline-step {
+            position: relative;
+            text-align: center;
+            padding: 25px 15px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: #ffffff04;
+        }
+
+        .step-number {
+            font: 0.7rem 'Space Mono', monospace;
+            color: var(--cyan);
+            margin-bottom: 15px;
+        }
+
+        .pipeline-step h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .pipeline-step p {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 65px 25px;
+            border: 1px solid #8b5cf640;
+            border-radius: 24px;
+            margin-bottom: 100px;
+            background:
+                radial-gradient(ellipse at top, #8b5cf620, transparent 65%),
+                #ffffff04;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            color: var(--muted);
+            margin-bottom: 28px;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-code {
+            font-family: 'Space Mono', monospace;
+            color: var(--cyan);
+        }
+
+        /* ANIMATIONS */
+        @keyframes pulse {
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes blink {
+            to { visibility: hidden; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 850px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 45px;
+                padding-top: 70px;
+            }
+
+            .hero-copy {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .actions {
+                justify-content: center;
+            }
+
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            h1 {
+                letter-spacing: -2px;
+            }
+
+            .nav-content {
+                min-height: 65px;
+            }
+
+            .nav-links a:not(.nav-button) {
+                display: none;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .metric + .metric {
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+
+            .metric {
+                padding: 22px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .terminal-body {
+                padding: 18px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Welcome to CI/CD Workshop!</h1>
 
-    <h2>Continuous Integration and Continuous Deployment</h2>
+    <nav>
+        <div class="container nav-content">
+            <a href="#" class="logo">&lt;DEV<span>OPS</span>/&gt;</a>
 
-    <p>This is a basic HTML page created for the CI/CD workshop.</p>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#pipeline">Pipeline</a>
+                <a href="#features">Features</a>
+                <a href="#get-started" class="nav-button">Get Started ↗</a>
+            </div>
+        </div>
+    </nav>
 
-    <h3>Workshop Objectives</h3>
-    <ul>
-        <li>Understand Git and GitHub</li>
-        <li>Learn Continuous Integration (CI)</li>
-        <li>Learn Continuous Deployment (CD)</li>
-        <li>Automate the build and deployment process</li>
-    </ul>
+    <main>
+        <div class="container">
+            <section class="hero" id="about">
+                <div class="hero-copy">
+                    <div class="eyebrow">
+                        <span class="dot"></span>
+                        CI/CD WORKSHOP · 2026
+                    </div>
 
-    <p>My first CI/CD pipeline starts here!</p>
+                    <h1>
+                        Code.<br>
+                        Build.<br>
+                        <span class="gradient-text">Deploy.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        From your first commit to production deployment.
+                        Discover the power of Continuous Integration and
+                        Continuous Deployment and build a faster development workflow.
+                    </p>
+
+                    <div class="actions">
+                        <a href="#pipeline" class="btn btn-primary">
+                            Explore the Pipeline →
+                        </a>
+                        <a href="#features" class="btn btn-secondary">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">deployment.sh</span>
+                    </div>
+
+                    <div class="terminal-body">
+                        <div class="comment"># Step 01: Write your code</div>
+                        <div><span class="command">$ git add .</span></div>
+                        <div><span class="command">$ git commit -m "Initial commit"</span></div>
+                        <br>
+
+                        <div class="comment"># Step 02: Push to GitHub</div>
+                        <div><span class="command">$ git push origin main</span></div>
+                        <br>
+
+                        <div class="comment"># Step 03: Run the pipeline</div>
+                        <div class="info">[INFO] Running automated tests...</div>
+                        <div class="success">[PASS] All checks completed</div>
+                        <div class="info">[INFO] Deploying application...</div>
+                        <div class="success">[SUCCESS] Deployment complete!</div>
+                        <br>
+
+                        <div class="success">
+                            $ <span class="cursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="metrics">
+                <div class="metric">
+                    <h2 class="gradient-text">01</h2>
+                    <p>Commit Your Code</p>
+                </div>
+
+                <div class="metric">
+                    <h2 class="gradient-text">02</h2>
+                    <p>Automate Testing</p>
+                </div>
+
+                <div class="metric">
+                    <h2 class="gradient-text">03</h2>
+                    <p>Deploy with Confidence</p>
+                </div>
+            </div>
+
+            <section id="features">
+                <div class="section-heading">
+                    <span class="label">Why CI/CD?</span>
+                    <h2>Ship code, <span class="gradient-text">not stress.</span></h2>
+                    <p>Build a workflow that makes software delivery reliable and repeatable.</p>
+                </div>
+
+                <div class="features">
+                    <article class="feature-card">
+                        <div class="feature-icon">⌘</div>
+                        <h3>Continuous Integration</h3>
+                        <p>
+                            Merge code frequently and automatically run
+                            checks to catch bugs early in development.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Automated Testing</h3>
+                        <p>
+                            Validate your changes with automated tests
+                            before they reach the production environment.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⇧</div>
+                        <h3>Continuous Deployment</h3>
+                        <p>
+                            Deliver approved changes to your hosting
+                            platform through an automated workflow.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">◈</div>
+                        <h3>Version Control</h3>
+                        <p>
+                            Track changes, collaborate with teammates,
+                            and maintain a reliable project history using Git.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⌁</div>
+                        <h3>Faster Feedback</h3>
+                        <p>
+                            Detect failed builds and broken tests early
+                            instead of discovering them after release.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⬡</div>
+                        <h3>Reliable Releases</h3>
+                        <p>
+                            Standardize deployment steps and reduce
+                            repetitive manual work with automation.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="pipeline">
+                <div class="section-heading">
+                    <span class="label">The Workflow</span>
+                    <h2>Your first <span class="gradient-text">pipeline.</span></h2>
+                    <p>Four steps from local development to a live application.</p>
+                </div>
+
+                <div class="pipeline">
+                    <div class="pipeline-step">
+                        <div class="step-number">STEP_01</div>
+                        <h3>Code</h3>
+                        <p>Write changes on your local machine.</p>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="step-number">STEP_02</div>
+                        <h3>Commit & Push</h3>
+                        <p>Upload your changes to GitHub.</p>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="step-number">STEP_03</div>
+                        <h3>Test & Build</h3>
+                        <p>Run automated checks using CI.</p>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="step-number">STEP_04</div>
+                        <h3>Deploy</h3>
+                        <p>Release the verified application.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta" id="get-started">
+                <h2>Ready to automate <span class="gradient-text">everything?</span></h2>
+                <p>Your DevOps journey starts with one commit.</p>
+                <a href="https://github.com/" target="_blank"
+                   rel="noopener noreferrer" class="btn btn-primary">
+                    Explore GitHub →
+                </a>
+            </section>
+        </div>
+    </main>
 
     <footer>
-        <p>Created for the CI/CD Workshop | 2026</p>
+        <div class="container footer-content">
+            <p>© 2026 CI/CD Workshop. Built for developers.</p>
+            <p class="footer-code">git commit -m "first deployment"</p>
+        </div>
     </footer>
+
 </body>
 </html>
